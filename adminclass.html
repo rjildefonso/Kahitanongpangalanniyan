@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Classes | BSHSIMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 min-h-screen text-white font-sans">
+
+  
+  <nav class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-4 sm:px-8 py-3 sm:py-4 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center shadow-lg fixed top-0 left-0 w-full z-50">
+    <h1 class="text-lg sm:text-xl font-semibold text-indigo-400 text-center sm:text-left leading-tight">
+      Barretto SHS Information Management System (BSHSIMS)
+    </h1>
+    <button onclick="logout()" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg font-medium transition-all shadow-md w-full sm:w-auto">
+      Logout
+    </button>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-28 pb-16">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-indigo-400">My Classes</h2>
+        <p class="text-slate-400 text-sm mt-1">Manage and organize school classes efficiently.</p>
+      </div>
+      <button onclick="showAddClass()" class="bg-indigo-600 hover:bg-indigo-500 px-5 py-2.5 rounded-lg font-semibold transition-all shadow-lg w-full sm:w-auto">
+        + Add Class
+      </button>
+    </div>
+
+
+    <div id="classList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </main>
+
+
+  <div id="classModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+    <div class="bg-slate-900/90 border border-slate-700 p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-sm sm:max-w-md">
+      <h3 class="text-2xl font-bold text-indigo-400 mb-6 text-center">Add New Class</h3>
+
+      <div class="space-y-4">
+        <input id="className" placeholder="Section"
+               class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:ring-2 focus:ring-indigo-500 text-white outline-none transition-all" />
+        <input id="classSection" placeholder="Grade"
+               class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:ring-2 focus:ring-indigo-500 text-white outline-none transition-all" />
+      </div>
+
+      <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6">
+        <button onclick="closeModal()" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all w-full sm:w-auto">Cancel</button>
+        <button onclick="saveClass()" class="bg-indigo-600 hover:bg-indigo-500 px-5 py-2 rounded-lg font-semibold shadow-lg transition-all w-full sm:w-auto">Save</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    if (localStorage.getItem("adminLogged") !== "true") {
+      window.location.href = "admin-login.html";
+    }
+
+    const classKey = "bshsims_classes_admin";
+    let classes = JSON.parse(localStorage.getItem(classKey) || "[]");
+
+    function saveClasses() {
+      localStorage.setItem(classKey, JSON.stringify(classes));
+    }
+
+    function renderClasses() {
+      const container = document.getElementById("classList");
+      container.innerHTML = "";
+
+      if (classes.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center text-slate-400 mt-12 sm:mt-16">
+            <img src="https://cdn-icons-png.flaticon.com/512/4072/4072718.png"
+                 class="mx-auto w-20 sm:w-24 opacity-70 mb-3" alt="no classes">
+            <p class="text-base sm:text-lg">
+              No classes yet. Click <span class="text-indigo-400 font-semibold">+ Add Class</span> to create one.
+            </p>
+          </div>`;
+        return;
+      }
+
+      classes.forEach((c, i) => {
+        const card = document.createElement("div");
+        card.className = `
+          bg-slate-900/80 backdrop-blur-md border border-slate-800
+          p-5 sm:p-6 rounded-2xl shadow-lg hover:shadow-indigo-500/30 hover:scale-[1.02]
+          transition-all duration-300 flex flex-col justify-between
+        `;
+        card.innerHTML = `
+          <div>
+            <h3 class="text-xl sm:text-2xl font-semibold text-indigo-400 mb-1 sm:mb-2">${c.name}</h3>
+            <p class="text-slate-300 mb-4 text-sm sm:text-base">
+              Section: <span class="font-medium">${c.section}</span>
+            </p>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3 mt-auto">
+            <button onclick="openClass(${i})"
+              class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg flex-1 transition-all font-medium shadow-md">
+              Open
+            </button>
+            <button onclick="deleteClass(${i})"
+              class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg flex-1 transition-all font-medium shadow-md">
+              Delete
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function showAddClass() {
+      document.getElementById("classModal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      document.getElementById("classModal").classList.add("hidden");
+      document.getElementById("className").value = "";
+      document.getElementById("classSection").value = "";
+    }
+
+    function saveClass() {
+      const name = document.getElementById("className").value.trim();
+      const section = document.getElementById("classSection").value.trim();
+      if (!name || !section) return alert("Please fill out all fields!");
+
+      classes.push({ name, section, students: [] });
+      saveClasses();
+      closeModal();
+      renderClasses();
+    }
+
+    function deleteClass(i) {
+      if (!confirm("Delete this class and all its students?")) return;
+      classes.splice(i, 1);
+      saveClasses();
+      renderClasses();
+    }
+
+    function openClass(index) {
+      localStorage.setItem("selectedClass", index);
+      window.location.href = "admincreategradeofstudents.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("adminLogged");
+      window.location.href = "Index.html";
+    }
+
+    renderClasses();
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Login | BSHSIMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      animation: fadeInUp 0.7s ease-out;
+      backdrop-filter: blur(16px) saturate(180%);
+      background-color: rgba(18, 24, 20, 0.65);
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .input:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 8px #10b98170;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-pro {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px #16a34a50;
+    }
+
+    .btn-pro:hover {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px #22c55e80;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-950 via-emerald-950 to-emerald-900 min-h-screen flex items-center justify-center text-white px-4 sm:px-0">
+
+  <div class="card p-8 sm:p-10 w-full max-w-sm sm:max-w-md shadow-2xl">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
+        BSHSIMS
+      </h1>
+      <p class="text-sm sm:text-base text-emerald-300 mt-2 tracking-wide">Administrator Login</p>
+    </div>
+
+    <div class="space-y-5">
+      <div>
+        <label for="username" class="block text-sm text-emerald-200 mb-1">Username</label>
+        <input id="username" placeholder="Enter your username"
+          class="input w-full p-3 rounded-lg text-white focus:outline-none placeholder:text-emerald-400" />
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm text-emerald-200 mb-1">Password</label>
+        <input id="password" type="password" placeholder="Enter your password"
+          class="input w-full p-3 rounded-lg text-white focus:outline-none placeholder:text-emerald-400" />
+      </div>
+
+      <button onclick="login()"
+        class="btn-pro w-full py-3 rounded-lg text-white font-semibold shadow-lg text-base sm:text-lg">
+        Sign In
+      </button>
+    </div>
+
+    <div class="text-center mt-8">
+      <p class="text-xs sm:text-sm text-emerald-300/80">© 2025 Barretto Senior High School</p>
+    </div>
+  </div>
+
+  <script>
+    function login() {
+      const user = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value.trim();
+
+      if (user === "admin" && pass === "1234") {
+        localStorage.setItem("adminLogged", "true");
+        window.location.href = "adminclass.html";
+      } else {
+        alert("Invalid username or password!");
+      }
+    }
+  </script>
+</body>
+</html>
